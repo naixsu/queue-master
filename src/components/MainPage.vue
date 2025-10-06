@@ -76,13 +76,14 @@
                 {{ pos }}
               </option>
             </select>
-            <button
-              class="add-btn"
+            <Button
+              variant="primary"
+              size="md"
               @click="addPlayer"
               :disabled="!newPlayer.name || !newPlayer.position"
             >
               Add Player
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -91,13 +92,14 @@
             <h3>
               All Players ({{ players.length }})
             </h3>
-            <button
+            <Button
               v-if="players.length > 0"
+              variant="danger"
+              size="sm"
               @click="clearAllPlayers"
-              class="clear-btn"
             >
               Clear All
-            </button>
+            </Button>
           </div>
 
           <div
@@ -116,43 +118,19 @@
             v-else
             class="players-grid"
           >
-            <div
+            <PlayerCard
               v-for="(player, i) in players"
               :key="i"
-              class="player-card"
-              :class="getPositionClass(player.position)"
-            >
-              <div class="player-info">
-                <div class="player-name">
-                  {{ player.name }}
-                </div>
-                <div class="player-position">
-                  {{ player.position }}
-                </div>
-              </div>
-              <button
-                class="remove-btn"
-                @click="removePlayer(i)"
-                title="Remove player"
-              >
-                <span class="remove-icon">
-                  ×
-                </span>
-              </button>
-            </div>
+              :player="player"
+              @remove="removePlayer(i)"
+            />
           </div>
         </div>
 
-        <button
-          class="shuffle-btn"
+        <ShuffleButton
           @click="shuffleTeams"
           :disabled="players.length < 7"
-        >
-          Shuffle Teams
-          <span class="btn-subtitle">
-            (Need at least 7 players)
-          </span>
-        </button>
+        />
       </div>
 
       <!-- Right Column: Teams -->
@@ -182,36 +160,12 @@
         </div>
 
         <div v-else class="teams-grid">
-          <div
+          <TeamCard
             v-for="(team, t) in teams"
             :key="t"
-            class="team-card"
-          >
-            <div class="team-header">
-              <h3>
-                Team {{ t + 1 }}
-              </h3>
-              <div class="team-size">
-                {{ team.length }} players
-              </div>
-            </div>
-            
-            <div class="team-players">
-              <div
-                v-for="player in team"
-                :key="player.name"
-                class="team-player"
-                :class="getPositionClass(player.position)"
-              >
-                <div class="player-name">
-                  {{ player.name }}
-                </div>
-                <div class="player-position">
-                  {{ player.position }}
-                </div>
-              </div>
-            </div>
-          </div>
+            :team-number="t + 1"
+            :players="team"
+          />
         </div>
       </div>
     </div>
@@ -220,6 +174,10 @@
 
 <script setup>
   import { ref, watch, onMounted } from 'vue'
+  import Button from './Button.vue'
+  import PlayerCard from './PlayerCard.vue'
+  import TeamCard from './TeamCard.vue'
+  import ShuffleButton from './ShuffleButton.vue'
 
   const positions = [
     'Setter',
@@ -469,45 +427,7 @@
     box-shadow: 0 0 0 1px var(--border-focus);
   }
 
-  .add-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2) var(--space-4);
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    border: none;
-    border-radius: var(--radius-md);
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color var(--transition-fast);
-  }
 
-  .add-btn:hover:not(:disabled) {
-    background-color: var(--color-primary-hover);
-  }
-
-  .add-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .clear-btn {
-    padding: var(--space-1) var(--space-3);
-    background-color: var(--color-danger-bg);
-    color: var(--color-danger);
-    border: 1px solid var(--color-danger-bg);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: background-color var(--transition-fast);
-  }
-
-  .clear-btn:hover {
-    background-color: var(--color-danger-hover);
-  }
 
   .empty-state {
     text-align: center;
@@ -532,92 +452,7 @@
     overflow-y: auto;
   }
 
-  .player-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-3);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-medium);
-    background-color: var(--bg-card);
-    transition: border-color var(--transition-fast);
-  }
 
-  .player-card:hover {
-    border-color: var(--border-medium);
-  }
-
-  .player-info {
-    flex: 1;
-  }
-
-  .player-name {
-    font-weight: var(--font-medium);
-    color: var(--text-primary);
-    margin-bottom: var(--space-1);
-  }
-
-  .player-position {
-    font-size: var(--text-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: var(--font-medium);
-  }
-
-  .remove-btn {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: none;
-    background-color: var(--color-danger-bg);
-    color: var(--color-danger);
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--transition-fast);
-  }
-
-  .remove-btn:hover {
-    background-color: var(--color-danger-hover);
-  }
-
-  .remove-icon {
-    font-size: var(--text-lg);
-    font-weight: var(--font-bold);
-  }
-
-  .shuffle-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-6);
-    background-color: var(--color-success);
-    color: var(--color-white);
-    border: none;
-    border-radius: var(--radius-lg);
-    font-size: var(--text-base);
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    flex-direction: column;
-    transition: background-color var(--transition-fast);
-  }
-
-  .shuffle-btn:hover:not(:disabled) {
-    background-color: var(--color-success-hover);
-  }
-
-  .shuffle-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .btn-subtitle {
-    font-size: var(--text-sm);
-    opacity: 0.8;
-    font-weight: var(--font-normal);
-  }
 
   .empty-teams {
     background-color: var(--bg-card);
@@ -645,96 +480,8 @@
     gap: var(--space-3);
   }
 
-  .team-card {
-    background-color: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
-  }
 
-  .team-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-3);
-    padding-bottom: var(--space-2);
-    border-bottom: 1px solid var(--border-medium);
-  }
-
-  .team-header h3 {
-    margin: 0;
-    font-size: var(--text-xl);
-    font-weight: var(--font-semibold);
-    color: var(--text-secondary);
-  }
-
-  .team-size {
-    font-size: var(--text-sm);
-    color: var(--color-gray-500);
-    background-color: var(--color-gray-100);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-sm);
-    font-weight: var(--font-medium);
-  }
-
-  .team-players {
-    display: grid;
-    gap: var(--space-1);
-  }
-
-  .team-player {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-2);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-medium);
-  }
-
-  .team-player .player-name {
-    font-weight: var(--font-medium);
-    color: var(--text-primary);
-  }
-
-  .team-player .player-position {
-    font-size: var(--text-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: var(--font-medium);
-  }
-
-  /* Position-specific colors */
-  .position-setter {
-    background-color: var(--position-setter-bg);
-    color: var(--position-setter-text);
-  }
-
-  .position-libero {
-    background-color: var(--position-libero-bg);
-    color: var(--position-libero-text);
-  }
-
-  .position-middle {
-    background-color: var(--position-middle-bg);
-    color: var(--position-middle-text);
-  }
-
-  .position-outside {
-    background-color: var(--position-outside-bg);
-    color: var(--position-outside-text);
-  }
-
-  .position-opposite {
-    background-color: var(--position-opposite-bg);
-    color: var(--position-opposite-text);
-  }
-
-  .position-extra {
-    background-color: var(--position-extra-bg);
-    color: var(--position-extra-text);
-  }
-
+  /* Position-specific colors for legend */
   .legend-item.position-setter {
     background-color: var(--position-setter-bg);
     color: var(--position-setter-text);
