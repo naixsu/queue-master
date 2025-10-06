@@ -3,16 +3,26 @@
     <header class="header">
       <div class="header-content">
         <div class="logo">
-          <h1>Volleyball Team Manager</h1>
+          <h1>
+            Volleyball Team Manager
+          </h1>
         </div>
         <div class="stats">
           <div class="stat">
-            <span class="stat-number">{{ players.length }}</span>
-            <span class="stat-label">Players</span>
+            <span class="stat-number">
+              {{ players.length }}
+            </span>
+            <span class="stat-label">
+              Players
+            </span>
           </div>
           <div class="stat">
-            <span class="stat-number">{{ teams.length }}</span>
-            <span class="stat-label">Teams</span>
+            <span class="stat-number">
+              {{ teams.length }}
+            </span>
+            <span class="stat-label">
+              Teams
+            </span>
           </div>
         </div>
       </div>
@@ -22,16 +32,25 @@
       <!-- Left Column: Player Management -->
       <div class="players-section">
         <div class="section-header">
-          <h2>Player Management</h2>
+          <h2>
+            Player Management
+          </h2>
           <div class="position-legend">
-            <span class="legend-item" v-for="pos in positions" :key="pos" :class="getPositionClass(pos)">
+            <span
+              v-for="pos in positions"
+              class="legend-item"
+              :key="pos"
+              :class="getPositionClass(pos)"
+            >
               {{ pos }}
             </span>
           </div>
         </div>
 
         <div class="player-form-card">
-          <h3>Add New Player</h3>
+          <h3>
+            Add New Player
+          </h3>
           <div class="form-group">
             <input
               v-model="newPlayer.name"
@@ -39,8 +58,16 @@
               class="player-input"
               @keyup.enter="addPlayer"
             />
-            <select v-model="newPlayer.position" class="position-select">
-              <option disabled value="">Select position</option>
+            <select
+              v-model="newPlayer.position"
+              class="position-select"
+            >
+              <option
+                disabled
+                value=""
+              >
+                Select position
+              </option>
               <option
                 v-for="pos in positions"
                 :key="pos"
@@ -49,7 +76,11 @@
                 {{ pos }}
               </option>
             </select>
-            <button @click="addPlayer" class="add-btn" :disabled="!newPlayer.name || !newPlayer.position">
+            <button
+              class="add-btn"
+              @click="addPlayer"
+              :disabled="!newPlayer.name || !newPlayer.position"
+            >
               Add Player
             </button>
           </div>
@@ -57,18 +88,34 @@
 
         <div class="players-list-card">
           <div class="card-header">
-            <h3>All Players ({{ players.length }})</h3>
-            <button v-if="players.length > 0" @click="clearAllPlayers" class="clear-btn">
+            <h3>
+              All Players ({{ players.length }})
+            </h3>
+            <button
+              v-if="players.length > 0"
+              @click="clearAllPlayers"
+              class="clear-btn"
+            >
               Clear All
             </button>
           </div>
-          
-          <div v-if="players.length === 0" class="empty-state">
-            <p>No players added yet</p>
-            <p class="empty-subtitle">Add players to start building teams</p>
+
+          <div
+            v-if="players.length === 0"
+            class="empty-state"
+          >
+            <p>
+              No players added yet
+            </p>
+            <p class="empty-subtitle">
+              Add players to start building teams
+            </p>
           </div>
 
-          <div v-else class="players-grid">
+          <div
+            v-else
+            class="players-grid"
+          >
             <div
               v-for="(player, i) in players"
               :key="i"
@@ -76,15 +123,21 @@
               :class="getPositionClass(player.position)"
             >
               <div class="player-info">
-                <div class="player-name">{{ player.name }}</div>
-                <div class="player-position">{{ player.position }}</div>
+                <div class="player-name">
+                  {{ player.name }}
+                </div>
+                <div class="player-position">
+                  {{ player.position }}
+                </div>
               </div>
               <button
                 class="remove-btn"
                 @click="removePlayer(i)"
                 title="Remove player"
               >
-                <span class="remove-icon">×</span>
+                <span class="remove-icon">
+                  ×
+                </span>
               </button>
             </div>
           </div>
@@ -96,22 +149,36 @@
           :disabled="players.length < 7"
         >
           Shuffle Teams
-          <span class="btn-subtitle">(Need at least 7 players)</span>
+          <span class="btn-subtitle">
+            (Need at least 7 players)
+          </span>
         </button>
       </div>
 
       <!-- Right Column: Teams -->
       <div class="teams-section">
         <div class="section-header">
-          <h2>Generated Teams</h2>
-          <div v-if="teams.length > 0" class="team-stats">
+          <h2>
+            Generated Teams
+          </h2>
+          <div
+            v-if="teams.length > 0"
+            class="team-stats"
+          >
             {{ teams.length }} team{{ teams.length !== 1 ? 's' : '' }} formed
           </div>
         </div>
 
-        <div v-if="teams.length === 0" class="empty-teams">
-          <h3>No teams yet</h3>
-          <p>Add players and shuffle to generate balanced volleyball teams</p>
+        <div
+          v-if="teams.length === 0"
+          class="empty-teams"
+        >
+          <h3>
+            No teams yet
+          </h3>
+          <p>
+            Add players and shuffle to generate balanced volleyball teams
+          </p>
         </div>
 
         <div v-else class="teams-grid">
@@ -121,8 +188,12 @@
             class="team-card"
           >
             <div class="team-header">
-              <h3>Team {{ t + 1 }}</h3>
-              <div class="team-size">{{ team.length }} players</div>
+              <h3>
+                Team {{ t + 1 }}
+              </h3>
+              <div class="team-size">
+                {{ team.length }} players
+              </div>
             </div>
             
             <div class="team-players">
@@ -132,8 +203,12 @@
                 class="team-player"
                 :class="getPositionClass(player.position)"
               >
-                <div class="player-name">{{ player.name }}</div>
-                <div class="player-position">{{ player.position }}</div>
+                <div class="player-name">
+                  {{ player.name }}
+                </div>
+                <div class="player-position">
+                  {{ player.position }}
+                </div>
               </div>
             </div>
           </div>
