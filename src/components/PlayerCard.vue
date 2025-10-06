@@ -14,27 +14,23 @@
         {{ player.position }}
       </div>
     </div>
-    <button
+    <Button
       v-if="showRemove"
-      class="remove-btn"
+      variant="danger"
+      size="sm"
       @click="$emit('remove')"
-      title="Remove player"
     >
-      <span class="remove-icon">
-        ×
-      </span>
-    </button>
+      Remove
+    </Button>
     
-    <button
+    <Button
       v-if="showTeamRemove"
-      class="remove-btn"
+      variant="danger"
+      size="sm"
       @click="$emit('remove-from-team')"
-      title="Remove player from team"
     >
-      <span class="remove-icon">
-        ×
-      </span>
-    </button>
+      Remove
+    </Button>
 
     <div
       v-if="showSelection"
@@ -46,6 +42,8 @@
 </template>
 
 <script setup>
+  import Button from './Button.vue'
+
   defineProps({
     player: {
       type: Object,
@@ -125,23 +123,6 @@
     font-weight: var(--font-medium);
   }
 
-  .remove-btn {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: none;
-    background-color: var(--color-danger-bg);
-    color: var(--color-danger);
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--transition-fast);
-  }
-
-  .remove-btn:hover {
-    background-color: var(--color-danger-hover);
-  }
 
   .remove-team-btn {
     position: absolute;
@@ -165,10 +146,6 @@
     background-color: var(--color-danger-hover);
   }
 
-  .remove-icon {
-    font-size: var(--text-lg);
-    font-weight: var(--font-bold);
-  }
 
   .selection-indicator {
     font-size: var(--text-lg);

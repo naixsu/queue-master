@@ -8,13 +8,20 @@
         <div class="team-size">
           {{ players.length }} players
         </div>
-        <button
-          class="remove-team-btn"
-          @click="$emit('remove-team')"
-          title="Remove entire team"
+        <Button
+          variant="primary"
+          size="sm"
+          @click="$emit('edit-team')"
         >
-          <span class="remove-icon">×</span>
-        </button>
+          Edit
+        </Button>
+        <Button
+          variant="danger"
+          size="sm"
+          @click="$emit('remove-team')"
+        >
+          Remove
+        </Button>
       </div>
     </div>
 
@@ -33,6 +40,7 @@
 
 <script setup>
   import PlayerCard from './PlayerCard.vue'
+  import Button from './Button.vue'
 
   defineProps({
     teamNumber: {
@@ -46,7 +54,7 @@
     }
   })
 
-  defineEmits(['remove-team', 'remove-player'])
+  defineEmits(['remove-team', 'remove-player', 'edit-team'])
 </script>
 
 <style scoped>
@@ -89,34 +97,11 @@
     font-weight: var(--font-medium);
   }
 
-  .remove-team-btn {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: none;
-    background-color: var(--color-danger-bg);
-    color: var(--color-danger);
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--transition-fast);
-  }
-
-  .remove-team-btn:hover {
-    background-color: var(--color-danger-hover);
-  }
 
   .team-players {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-1);
-  }
-
-
-  .remove-icon {
-    font-size: var(--text-sm);
-    font-weight: var(--font-bold);
   }
 
   @media (max-width: 768px) {
