@@ -28,6 +28,8 @@ The volleyball rules it follows:
 ### The UI
 I tried to keep it clean and simple. No fancy gradients or anything that might distract from actually using it. Everything scales nicely when you zoom in/out, and it works on mobile too. I broke it down into reusable components so it's easy to maintain.
 
+**Built-in Help**: Click the "Help" button next to the title to get a quick overview of what the app does and how to use it. Perfect for new users who want to get started quickly.
+
 ### Data Persistence
 Everything saves automatically to your browser's local storage, so you won't lose your teams when you refresh the page. When you reload, it reconstructs all the teams from the player data.
 
@@ -65,6 +67,8 @@ npm run build
 
 ## How to Use It
 
+**💡 Need help?** Click the "Help" button next to the title for a quick guide!
+
 ### Adding Players
 Pretty straightforward - just type in a name, pick a position from the dropdown, and hit "Add Player". The player will show up in the list with a colored badge for their position.
 
@@ -100,6 +104,7 @@ I split everything into separate components:
 - **Button.vue**: Reusable button component
 - **ShuffleButton.vue**: Special button for shuffling
 - **TeamSelectionModal.vue**: The modal for manual team creation
+- **HelpModal.vue**: Built-in help system for new users
 
 ### Styling
 I put all the CSS variables in `main.css` so I can easily change colors and spacing across the whole app. Each component has its own scoped styles that use those variables.
@@ -149,7 +154,8 @@ src/
 │   ├── TeamCard.vue
 │   ├── Button.vue
 │   ├── ShuffleButton.vue
-│   └── TeamSelectionModal.vue
+│   ├── TeamSelectionModal.vue
+│   └── HelpModal.vue
 ├── main.css
 ├── main.js
 └── App.vue
@@ -161,14 +167,17 @@ src/
 - **Extra Player Support**: Extra players are now included in automatic shuffling and distributed evenly across teams
 - **Team Editing**: Click the "Edit" button on any team to modify its players after creation
 - **Enhanced Manual Team Creation**: Add as many Extra players as you want during team creation
+- **Built-in Help System**: Click the "Help" button for a quick guide on how to use the app
 - **Improved UI**: Better visual feedback for selected players with highlighting and consistent button styling
 - **Flexible Team Management**: Full control over team composition with easy add/remove functionality
 
 ### UI Improvements:
-- Replaced icon-based buttons with clear text labels for better accessibility
-- Enhanced visual feedback for player selection in team creation modal
-- Consistent button styling throughout the application
-- Better responsive design for mobile devices
+- **Help Button**: Easy-to-find "Help" button next to the title for new users
+- **Consistent Button Design**: All buttons now use the Button component with clear text labels
+- **Enhanced Accessibility**: Replaced icon-based buttons with descriptive text for better screen reader support
+- **Better Visual Feedback**: Improved player selection highlighting in team creation modal
+- **Component Architecture**: Modular design with separate HelpModal component for better maintainability
+- **Mobile Responsive**: Optimized design that works great on all device sizes
 
 ## Contributing
 
