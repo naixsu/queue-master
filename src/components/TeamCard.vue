@@ -8,7 +8,7 @@
         {{ players.length }} players
       </div>
     </div>
-    
+
     <div class="team-players">
       <PlayerCard
         v-for="player in players"

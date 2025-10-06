@@ -272,6 +272,8 @@
   .app {
     min-height: 100vh;
     background-color: var(--bg-primary);
+    width: 100%;
+    overflow-x: hidden;
   }
 
   .header {
@@ -284,7 +286,7 @@
   }
 
   .header-content {
-    max-width: 1000px;
+    max-width: 90vw;
     margin: 0 auto;
     padding: 0 var(--space-4);
     display: flex;
@@ -329,7 +331,7 @@
   }
 
   .main-layout {
-    max-width: 1000px;
+    max-width: 90vw;
     margin: 0 auto;
     padding: var(--space-4);
     display: grid;
@@ -448,7 +450,7 @@
   .players-grid {
     display: grid;
     gap: var(--space-2);
-    max-height: 400px;
+    max-height: 50vh;
     overflow-y: auto;
   }
 
@@ -514,30 +516,32 @@
     .main-layout {
       grid-template-columns: 1fr;
       gap: var(--space-4);
+      max-width: 95vw;
     }
-    
+
     .header-content {
       flex-direction: column;
       gap: var(--space-3);
+      max-width: 95vw;
     }
-    
+
     .stats {
       gap: var(--space-4);
     }
-    
+
     .form-group {
       flex-direction: column;
     }
-    
+
     .player-input,
     .position-select {
       min-width: auto;
     }
-    
+
     .position-legend {
       justify-content: center;
     }
-    
+
     .teams-grid {
       grid-template-columns: 1fr;
     }
@@ -547,12 +551,12 @@
     .main-layout {
       padding: var(--space-2);
     }
-    
+
     .player-form-card,
     .players-list-card {
       padding: var(--space-3);
     }
-    
+
     .logo h1 {
       font-size: var(--text-2xl);
     }
