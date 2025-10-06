@@ -72,6 +72,13 @@
 
   .team-players {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-1);
+  }
+
+  @media (max-width: 768px) {
+    .team-players {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

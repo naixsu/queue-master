@@ -333,7 +333,7 @@
     margin: 0 auto;
     padding: var(--space-4);
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1.5fr;
     gap: var(--space-6);
   }
 
@@ -448,11 +448,9 @@
   .players-grid {
     display: grid;
     gap: var(--space-2);
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
   }
-
-
 
   .empty-teams {
     background-color: var(--bg-card);
@@ -477,9 +475,9 @@
 
   .teams-grid {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-3);
   }
-
 
   /* Position-specific colors for legend */
   .legend-item.position-setter {
@@ -538,6 +536,10 @@
     
     .position-legend {
       justify-content: center;
+    }
+    
+    .teams-grid {
+      grid-template-columns: 1fr;
     }
   }
 
