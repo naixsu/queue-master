@@ -10,7 +10,7 @@
     >
       <div class="modal-header">
         <h2>
-          Create Team
+          {{ editingTeam ? 'Edit Team' : 'Create Team' }}
         </h2>
         <button
           class="close-btn"
@@ -101,6 +101,18 @@
                 ({{ selectedCounts['Opposite Hitter'] }}/1)
               </span>
             </div>
+
+            <div class="requirement extra-requirement">
+              <span class="requirement-icon">
+                +
+              </span>
+              <span>
+                Extra Players (Optional)
+              </span>
+              <span class="count">
+                ({{ selectedCounts['Extra'] }})
+              </span>
+            </div>
           </div>
         </div>
 
@@ -144,7 +156,7 @@
           @click="createTeam"
           :disabled="!canCreateTeam"
         >
-          Create Team
+          {{ editingTeam ? 'Update Team' : 'Create Team' }}
         </Button>
       </div>
     </div>
@@ -152,7 +164,7 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, watch } from 'vue'
   import Button from './Button.vue'
   import PlayerCard from './PlayerCard.vue'
 
@@ -164,6 +176,10 @@
     players: {
       type: Array,
       default: () => []
+    },
+    editingTeam: {
+      type: Array,
+      default: null
     }
   })
 
@@ -172,7 +188,27 @@
   const selectedPlayers = ref([])
 
   const availablePlayers = computed(() => {
+    if (props.editingTeam) {
+      // When editing, include all players (both unassigned and current team players)
+      return props.players
+    }
     return props.players.filter(player => !player.teamNumber)
+  })
+
+  // Watch for editing team changes to pre-select players
+  watch(() => props.editingTeam, (newEditingTeam) => {
+    if (newEditingTeam && props.isOpen) {
+      selectedPlayers.value = newEditingTeam.map(player => player.name)
+    } else if (!newEditingTeam) {
+      selectedPlayers.value = []
+    }
+  }, { immediate: true })
+
+  // Watch for modal open/close to reset selection when not editing
+  watch(() => props.isOpen, (isOpen) => {
+    if (isOpen && !props.editingTeam) {
+      selectedPlayers.value = []
+    }
   })
 
   const selectedCounts = computed(() => {
@@ -330,6 +366,12 @@
     color: var(--color-white);
   }
 
+  .requirement.extra-requirement {
+    background-color: var(--color-gray-100);
+    color: var(--text-muted);
+    border: 1px dashed var(--border-medium);
+  }
+
   .requirement-icon {
     font-weight: var(--font-bold);
     font-size: var(--text-lg);
@@ -369,6 +411,18 @@
 
   .player-selector-wrapper.selected {
     box-shadow: 0 0 0 2px var(--color-primary);
+    background-color: var(--color-primary-bg);
+    border: 1px solid var(--color-primary);
+    transform: translateY(-1px);
+  }
+
+  .player-selector-wrapper.selected:first-child {
+    margin-top: 5px;
+  }
+
+  .player-selector-wrapper.selected:hover {
+    box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-lg);
+    background-color: var(--color-primary-hover);
   }
 
   .modal-footer {

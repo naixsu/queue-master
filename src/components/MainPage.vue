@@ -178,6 +178,7 @@
             :players="team"
             @remove-team="removeTeam(t)"
             @remove-player="removePlayerFromTeam"
+            @edit-team="editTeam(t)"
           />
         </div>
       </div>
@@ -189,6 +190,15 @@
       :players="players"
       @close="closeTeamModal"
       @create-team="createTeamFromModal"
+    />
+
+    <!-- Edit Team Modal -->
+    <TeamSelectionModal
+      :is-open="showEditTeamModal"
+      :players="players"
+      :editing-team="editingTeamIndex !== null ? teams[editingTeamIndex] : null"
+      @close="closeEditTeamModal"
+      @create-team="updateTeamFromModal"
     />
   </div>
 </template>
@@ -214,6 +224,8 @@
   const players = ref([])
   const teams = ref([])
   const showTeamModal = ref(false)
+  const showEditTeamModal = ref(false)
+  const editingTeamIndex = ref(null)
 
   onMounted(() => {
     const saved = localStorage.getItem('players')
@@ -304,6 +316,20 @@
       results.push(teamPlayers)
     }
 
+    // Distribute Extra players evenly across teams
+    const extraPlayers = temp['Extra']
+    if (extraPlayers.length > 0) {
+      // Shuffle extra players for random distribution
+      extraPlayers.sort(() => Math.random() - 0.5)
+
+      // Distribute extra players round-robin style
+      extraPlayers.forEach((extraPlayer, index) => {
+        const targetTeamIndex = index % results.length
+        extraPlayer.teamNumber = targetTeamIndex + 1
+        results[targetTeamIndex].push(extraPlayer)
+      })
+    }
+
     teams.value = results
   }
 
@@ -324,6 +350,35 @@
     })
 
     teams.value.push(teamPlayers)
+  }
+
+  function editTeam(teamIndex) {
+    editingTeamIndex.value = teamIndex
+    showEditTeamModal.value = true
+  }
+
+  function closeEditTeamModal() {
+    showEditTeamModal.value = false
+    editingTeamIndex.value = null
+  }
+
+  function updateTeamFromModal(teamPlayers) {
+    if (editingTeamIndex.value !== null) {
+      // Clear team numbers from current team players
+      teams.value[editingTeamIndex.value].forEach(player => {
+        player.teamNumber = null
+      })
+
+      // Assign team numbers to new team players
+      const teamNumber = editingTeamIndex.value + 1
+      teamPlayers.forEach(player => {
+        player.teamNumber = teamNumber
+      })
+
+      // Replace the team
+      teams.value[editingTeamIndex.value] = teamPlayers
+    }
+    closeEditTeamModal()
   }
 
   function removeTeam(teamIndex) {
