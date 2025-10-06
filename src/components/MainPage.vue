@@ -6,6 +6,14 @@
           <h1>
             Volleyball Team Manager
           </h1>
+          <Button
+            variant="primary"
+            size="md"
+            @click="showHelpModal = true"
+            title="What is this app and how to use it?"
+          >
+            Help
+          </Button>
         </div>
         <div class="stats">
           <div class="stat">
@@ -200,6 +208,12 @@
       @close="closeEditTeamModal"
       @create-team="updateTeamFromModal"
     />
+
+    <!-- Help Modal -->
+    <HelpModal
+      :is-open="showHelpModal"
+      @close="showHelpModal = false"
+    />
   </div>
 </template>
 
@@ -210,6 +224,7 @@
   import TeamCard from './TeamCard.vue'
   import ShuffleButton from './ShuffleButton.vue'
   import TeamSelectionModal from './TeamSelectionModal.vue'
+  import HelpModal from './HelpModal.vue'
 
   const positions = [
     'Setter',
@@ -226,6 +241,7 @@
   const showTeamModal = ref(false)
   const showEditTeamModal = ref(false)
   const editingTeamIndex = ref(null)
+  const showHelpModal = ref(false)
 
   onMounted(() => {
     const saved = localStorage.getItem('players')
