@@ -217,7 +217,11 @@
 
   onMounted(() => {
     const saved = localStorage.getItem('players')
-    if (saved) players.value = JSON.parse(saved)
+    if (saved) {
+      players.value = JSON.parse(saved)
+      // Reconstruct teams from players' team numbers
+      reconstructTeams()
+    }
   })
 
   watch(players, (val) => {
@@ -344,6 +348,27 @@
         player.teamNumber = newTeamNumber
       })
     })
+  }
+
+  function reconstructTeams() {
+    // Group players by their team number
+    const teamsMap = new Map()
+
+    players.value.forEach(player => {
+      if (player.teamNumber) {
+        if (!teamsMap.has(player.teamNumber)) {
+          teamsMap.set(player.teamNumber, [])
+        }
+        teamsMap.get(player.teamNumber).push(player)
+      }
+    })
+
+    // Convert map to array and sort by team number
+    const teamsArray = Array.from(teamsMap.entries())
+      .sort(([a], [b]) => a - b)
+      .map(([teamNumber, players]) => players)
+
+    teams.value = teamsArray
   }
 
   function removePlayerFromTeam(player) {
