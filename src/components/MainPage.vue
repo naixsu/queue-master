@@ -127,10 +127,21 @@
           </div>
         </div>
 
-        <ShuffleButton
-          @click="shuffleTeams"
-          :disabled="players.length < 7"
-        />
+        <div class="team-actions">
+          <Button
+            variant="success"
+            size="md"
+            @click="openTeamModal"
+            :disabled="players.length < 7"
+          >
+            Manual Team Creation
+          </Button>
+
+          <ShuffleButton
+            @click="shuffleTeams"
+            :disabled="players.length < 7"
+          />
+        </div>
       </div>
 
       <!-- Right Column: Teams -->
@@ -165,10 +176,20 @@
             :key="t"
             :team-number="t + 1"
             :players="team"
+            @remove-team="removeTeam(t)"
+            @remove-player="removePlayerFromTeam"
           />
         </div>
       </div>
     </div>
+
+    <!-- Team Selection Modal -->
+    <TeamSelectionModal
+      :is-open="showTeamModal"
+      :players="players"
+      @close="closeTeamModal"
+      @create-team="createTeamFromModal"
+    />
   </div>
 </template>
 
@@ -178,6 +199,7 @@
   import PlayerCard from './PlayerCard.vue'
   import TeamCard from './TeamCard.vue'
   import ShuffleButton from './ShuffleButton.vue'
+  import TeamSelectionModal from './TeamSelectionModal.vue'
 
   const positions = [
     'Setter',
@@ -191,6 +213,7 @@
   const newPlayer = ref({ name: '', position: '' })
   const players = ref([])
   const teams = ref([])
+  const showTeamModal = ref(false)
 
   onMounted(() => {
     const saved = localStorage.getItem('players')
@@ -215,6 +238,7 @@
     if (confirm('Are you sure you want to clear all players?')) {
       players.value = []
       teams.value = []
+      showTeamModal.value = false
     }
   }
 
@@ -231,21 +255,26 @@
   }
 
   function shuffleTeams() {
+    // Clear existing team assignments
+    players.value.forEach(player => {
+      player.teamNumber = null
+    })
+
     const shuffled = [...players.value].sort(() => Math.random() - 0.5)
     const temp = {
-      Setter: [],
-      Libero: [],
+      'Setter': [],
+      'Libero': [],
       'Middle Blocker': [],
       'Outside Hitter': [],
       'Opposite Hitter': [],
-      Extra: []
+      'Extra': []
     }
 
     shuffled.forEach(p => temp[p.position].push(p))
 
     const maxTeams = Math.min(
-      temp.Setter.length,
-      temp.Libero.length,
+      temp['Setter'].length,
+      temp['Libero'].length,
       Math.floor(temp['Middle Blocker'].length / 2),
       Math.floor(temp['Outside Hitter'].length / 2),
       temp['Opposite Hitter'].length
@@ -253,18 +282,87 @@
 
     const results = []
     for (let i = 0; i < maxTeams; i++) {
-      results.push([
-        temp.Setter.pop(),
-        temp.Libero.pop(),
+      const teamPlayers = [
+        temp['Setter'].pop(),
+        temp['Libero'].pop(),
         temp['Middle Blocker'].pop(),
         temp['Middle Blocker'].pop(),
         temp['Outside Hitter'].pop(),
         temp['Outside Hitter'].pop(),
         temp['Opposite Hitter'].pop(),
-      ].filter(Boolean))
+      ].filter(Boolean)
+
+      // Assign team numbers to players
+      teamPlayers.forEach(player => {
+        player.teamNumber = i + 1
+      })
+
+      results.push(teamPlayers)
     }
 
     teams.value = results
+  }
+
+  function openTeamModal() {
+    showTeamModal.value = true
+  }
+
+  function closeTeamModal() {
+    showTeamModal.value = false
+  }
+
+  function createTeamFromModal(teamPlayers) {
+    const teamNumber = teams.value.length + 1
+    
+    // Assign team numbers
+    teamPlayers.forEach(player => {
+      player.teamNumber = teamNumber
+    })
+
+    teams.value.push(teamPlayers)
+  }
+
+  function removeTeam(teamIndex) {
+    if (confirm('Are you sure you want to remove this entire team?')) {
+      // Clear team numbers from all players in this team
+      teams.value[teamIndex].forEach(player => {
+        player.teamNumber = null
+      })
+
+      // Remove the team
+      teams.value.splice(teamIndex, 1)
+
+      // Renumber all remaining teams
+      renumberTeams()
+    }
+  }
+
+  function renumberTeams() {
+    teams.value.forEach((team, index) => {
+      const newTeamNumber = index + 1
+      team.forEach(player => {
+        player.teamNumber = newTeamNumber
+      })
+    })
+  }
+
+  function removePlayerFromTeam(player) {
+    // Clear team number from player
+    player.teamNumber = null
+
+    // Remove player from all teams
+    teams.value.forEach(team => {
+      const playerIndex = team.findIndex(p => p.name === player.name)
+      if (playerIndex > -1) {
+        team.splice(playerIndex, 1)
+      }
+    })
+
+    // Remove empty teams
+    teams.value = teams.value.filter(team => team.length > 0)
+    
+    // Renumber all remaining teams
+    renumberTeams()
   }
 </script>
 
@@ -475,6 +573,12 @@
     font-size: var(--text-base);
   }
 
+  .team-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
   .teams-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -544,6 +648,10 @@
 
     .teams-grid {
       grid-template-columns: 1fr;
+    }
+    
+    .team-actions {
+      flex-direction: column;
     }
   }
 

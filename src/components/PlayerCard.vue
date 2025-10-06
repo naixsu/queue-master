@@ -6,6 +6,9 @@
     <div class="player-info">
       <div class="player-name">
         {{ player.name }}
+        <span v-if="player.teamNumber" class="team-number">
+          (Team {{ player.teamNumber }})
+        </span>
       </div>
       <div class="player-position">
         {{ player.position }}
@@ -21,6 +24,24 @@
         ×
       </span>
     </button>
+    
+    <button
+      v-if="showTeamRemove"
+      class="remove-btn"
+      @click="$emit('remove-from-team')"
+      title="Remove player from team"
+    >
+      <span class="remove-icon">
+        ×
+      </span>
+    </button>
+
+    <div
+      v-if="showSelection"
+      class="selection-indicator"
+    >
+      {{ isSelected ? '✓' : '○' }}
+    </div>
   </div>
 </template>
 
@@ -33,10 +54,22 @@
     showRemove: {
       type: Boolean,
       default: true
+    },
+    showTeamRemove: {
+      type: Boolean,
+      default: false
+    },
+    showSelection: {
+      type: Boolean,
+      default: false
+    },
+    isSelected: {
+      type: Boolean,
+      default: false
     }
   })
 
-  defineEmits(['remove'])
+  defineEmits(['remove', 'remove-from-team'])
 
   function getPositionClass(position) {
     const classMap = {
@@ -53,6 +86,7 @@
 
 <style scoped>
   .player-card {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -75,6 +109,13 @@
     font-weight: var(--font-medium);
     color: var(--text-primary);
     margin-bottom: var(--space-1);
+  }
+
+  .team-number {
+    font-size: var(--text-sm);
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+    margin-left: var(--space-1);
   }
 
   .player-position {
@@ -102,9 +143,38 @@
     background-color: var(--color-danger-hover);
   }
 
+  .remove-team-btn {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+    width: 1.25rem;
+    height: 1.25rem;
+    border: none;
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-fast);
+    z-index: 10;
+  }
+
+  .remove-team-btn:hover {
+    background-color: var(--color-danger-hover);
+  }
+
   .remove-icon {
     font-size: var(--text-lg);
     font-weight: var(--font-bold);
+  }
+
+  .selection-indicator {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
   }
 
   /* Position-specific colors */
