@@ -33,7 +33,7 @@ Everything saves automatically to your browser's local storage, so you won't los
 ## Getting Started
 
 ### What You Need
-- Node.js (version 16 or higher)
+- Node.js (version 16 ((maybe 20 i think?)) or higher)
 - npm or yarn
 
 ### Installation
