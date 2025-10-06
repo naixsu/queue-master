@@ -13,9 +13,9 @@ Hey there! I built this volleyball team management app because I was tired of ma
 ### Creating Teams
 I've got two ways to make teams:
 
-**Automatic Shuffling**: Just click the shuffle button and it'll create balanced teams following volleyball rules. You need at least 7 players for this to work.
+**Automatic Shuffling**: Just click the shuffle button and it'll create balanced teams following volleyball rules. You need at least 7 players for this to work. Extra players are automatically distributed evenly across all teams.
 
-**Manual Team Creation**: This is my favorite feature. Click "Manual Team Creation" and a modal pops up where you can pick exactly which players you want on a team. It shows you the requirements in real-time and won't let you create a team unless it follows the rules.
+**Manual Team Creation**: This is my favorite feature. Click "Manual Team Creation" and a modal pops up where you can pick exactly which players you want on a team. It shows you the requirements in real-time and won't let you create a team unless it follows the rules. You can also add Extra players as needed.
 
 The volleyball rules it follows:
 - 1 Setter
@@ -23,6 +23,7 @@ The volleyball rules it follows:
 - 2 Middle Blockers
 - 2 Outside Hitters
 - 1 Opposite Hitter
+- Extra players (optional, distributed evenly)
 
 ### The UI
 I tried to keep it clean and simple. No fancy gradients or anything that might distract from actually using it. Everything scales nicely when you zoom in/out, and it works on mobile too. I broke it down into reusable components so it's easy to maintain.
@@ -77,15 +78,17 @@ Pretty straightforward - just type in a name, pick a position from the dropdown,
 **For Manual Teams:**
 1. Click "Manual Team Creation"
 2. A modal opens with all your available players
-3. Click players to select them (you'll see checkmarks appear)
-4. The requirements section shows what you still need
+3. Click players to select them (you'll see them highlighted with a blue border)
+4. The requirements section shows what you still need (including optional Extra players)
 5. When everything's green, click "Create Team"
 6. Your team appears in the teams section
 
 ### Managing Teams
-- Remove individual players by clicking the × on their card in the team
-- Remove entire teams by clicking the × in the team header
-- When you remove teams, all the remaining teams get renumbered automatically (so if you remove Team 1, Team 2 becomes Team 1, etc.)
+- **Edit Teams**: Click the "Edit" button on any team to modify its players
+- **Remove Players**: Click "Remove" on individual player cards to remove them from teams
+- **Remove Teams**: Click "Remove" in the team header to delete entire teams
+- **Auto-renumbering**: When you remove teams, all remaining teams get renumbered automatically
+- **Extra Players**: Add as many Extra players as you want during team creation or editing
 
 ## How I Built It
 
@@ -113,6 +116,7 @@ I implemented the standard volleyball team composition:
 - **2 Middle Blockers**: Front-row blockers
 - **2 Outside Hitters**: Main attackers
 - **1 Opposite Hitter**: Secondary attacker
+- **Extra Players**: Flexible players that can fill any role (distributed evenly across teams)
 
 ### Data Structure
 Here's how the data looks:
@@ -150,6 +154,21 @@ src/
 ├── main.js
 └── App.vue
 ```
+
+## Recent Updates
+
+### New Features Added:
+- **Extra Player Support**: Extra players are now included in automatic shuffling and distributed evenly across teams
+- **Team Editing**: Click the "Edit" button on any team to modify its players after creation
+- **Enhanced Manual Team Creation**: Add as many Extra players as you want during team creation
+- **Improved UI**: Better visual feedback for selected players with highlighting and consistent button styling
+- **Flexible Team Management**: Full control over team composition with easy add/remove functionality
+
+### UI Improvements:
+- Replaced icon-based buttons with clear text labels for better accessibility
+- Enhanced visual feedback for player selection in team creation modal
+- Consistent button styling throughout the application
+- Better responsive design for mobile devices
 
 ## Contributing
 
