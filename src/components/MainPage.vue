@@ -1,5 +1,8 @@
 <template>
-  <div class="app">
+  <div
+    class="app"
+    :class="{ 'modal-open': showTeamModal || showEditTeamModal || showHelpModal }"
+  >
     <header class="header">
       <div class="header-content">
         <div class="logo">
@@ -470,6 +473,11 @@
     overflow-x: hidden;
   }
 
+  .app.modal-open {
+    overflow: hidden;
+    height: 100vh;
+  }
+
   .header {
     background-color: var(--bg-card);
     border-bottom: 1px solid var(--border-light);
@@ -672,7 +680,6 @@
   .team-actions {
     display: flex;
     gap: var(--space-3);
-    flex-wrap: wrap;
   }
 
   .teams-grid {
