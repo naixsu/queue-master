@@ -77,7 +77,7 @@
                 disabled
                 value=""
               >
-                Select position
+                Select position (optional)
               </option>
               <option
                 v-for="pos in positions"
@@ -91,7 +91,7 @@
               variant="primary"
               size="md"
               @click="addPlayer"
-              :disabled="!newPlayer.name || !newPlayer.position"
+              :disabled="!newPlayer.name"
             >
               Add Player
             </Button>
@@ -130,7 +130,7 @@
             class="players-grid"
           >
             <PlayerCard
-              v-for="(player, i) in players"
+              v-for="(player, i) in sortedPlayers"
               :key="i"
               :player="player"
               @remove="removePlayer(i)"
@@ -141,17 +141,21 @@
         <div class="team-actions">
           <Button
             variant="success"
-            size="md"
+            size="lg"
             @click="openTeamModal"
-            :disabled="players.length < 7"
+            :disabled="players.length < 2"
           >
             Manual Team Creation
           </Button>
 
-          <ShuffleButton
+          <Button
+            variant="success"
+            size="lg"
             @click="shuffleTeams"
-            :disabled="players.length < 7"
-          />
+            :disabled="players.length < 2"
+          >
+            Shuffle Teams
+          </Button>
         </div>
       </div>
 
@@ -221,22 +225,15 @@
 </template>
 
 <script setup>
-  import { ref, watch, onMounted } from 'vue'
+  import { ref, watch, onMounted, computed } from 'vue'
   import Button from './Button.vue'
   import PlayerCard from './PlayerCard.vue'
   import TeamCard from './TeamCard.vue'
-  import ShuffleButton from './ShuffleButton.vue'
   import TeamSelectionModal from './TeamSelectionModal.vue'
   import HelpModal from './HelpModal.vue'
+  import { POSITION_CONFIG, getPositionClass, sortPlayersByPosition } from '../config/positions.js'
 
-  const positions = [
-    'Setter',
-    'Libero',
-    'Middle Blocker',
-    'Outside Hitter',
-    'Opposite Hitter',
-    'Extra'
-  ]
+  const positions = POSITION_CONFIG.ORDER
 
   const newPlayer = ref({ name: '', position: '' })
   const players = ref([])
@@ -245,6 +242,11 @@
   const showEditTeamModal = ref(false)
   const editingTeamIndex = ref(null)
   const showHelpModal = ref(false)
+
+  // Computed property for players sorted by position
+  const sortedPlayers = computed(() => {
+    return sortPlayersByPosition(players.value)
+  })
 
   onMounted(() => {
     const saved = localStorage.getItem('players')
@@ -260,13 +262,21 @@
   }, { deep: true })
 
   function addPlayer() {
-    if (!newPlayer.value.name || !newPlayer.value.position) return
-    players.value.push({ ...newPlayer.value })
+    if (!newPlayer.value.name) return
+
+    const position = newPlayer.value.position || 'Undecided'
+    players.value.push({ name: newPlayer.value.name, position })
+
     newPlayer.value = { name: '', position: '' }
   }
 
-  function removePlayer(i) {
-    players.value.splice(i, 1)
+  function removePlayer(sortedIndex) {
+    // Find the original index in the players array
+    const sortedPlayer = sortedPlayers.value[sortedIndex]
+    const originalIndex = players.value.findIndex(p => p.name === sortedPlayer.name && p.position === sortedPlayer.position)
+    if (originalIndex !== -1) {
+      players.value.splice(originalIndex, 1)
+    }
   }
 
   function clearAllPlayers() {
@@ -277,17 +287,6 @@
     }
   }
 
-  function getPositionClass(position) {
-    const classMap = {
-      'Setter': 'position-setter',
-      'Libero': 'position-libero',
-      'Middle Blocker': 'position-middle',
-      'Outside Hitter': 'position-outside',
-      'Opposite Hitter': 'position-opposite',
-      'Extra': 'position-extra'
-    }
-    return classMap[position] || 'position-extra'
-  }
 
   function shuffleTeams() {
     // Clear existing team assignments
@@ -295,61 +294,60 @@
       player.teamNumber = null
     })
 
-    const shuffled = [...players.value].sort(() => Math.random() - 0.5)
-    const temp = {
-      'Setter': [],
-      'Libero': [],
-      'Middle Blocker': [],
-      'Outside Hitter': [],
-      'Opposite Hitter': [],
-      'Extra': []
+    if (players.value.length === 0) {
+      teams.value = []
+      return
     }
 
-    shuffled.forEach(p => temp[p.position].push(p))
+    // Calculate number of teams (any number of players can form teams)
+    const numPlayers = players.value.length
+    const numTeams = Math.max(1, Math.floor(numPlayers / 2)) // At least 1 team, prefer 2+ players per team
 
-    const maxTeams = Math.min(
-      temp['Setter'].length,
-      temp['Libero'].length,
-      Math.floor(temp['Middle Blocker'].length / 2),
-      Math.floor(temp['Outside Hitter'].length / 2),
-      temp['Opposite Hitter'].length
-    )
+    // Separate players by position using global config
+    const playersByPosition = {}
+    POSITION_CONFIG.ORDER.forEach(position => {
+      playersByPosition[position] = []
+    })
 
-    const results = []
-    for (let i = 0; i < maxTeams; i++) {
-      const teamPlayers = [
-        temp['Setter'].pop(),
-        temp['Libero'].pop(),
-        temp['Middle Blocker'].pop(),
-        temp['Middle Blocker'].pop(),
-        temp['Outside Hitter'].pop(),
-        temp['Outside Hitter'].pop(),
-        temp['Opposite Hitter'].pop(),
-      ].filter(Boolean)
+    players.value.forEach(player => {
+      if (playersByPosition[player.position]) {
+        playersByPosition[player.position].push(player)
+      } else {
+        playersByPosition['Undecided'].push(player)
+      }
+    })
 
-      // Assign team numbers to players
-      teamPlayers.forEach(player => {
-        player.teamNumber = i + 1
+    // Shuffle each position group
+    POSITION_CONFIG.ORDER.forEach(position => {
+      playersByPosition[position].sort(() => Math.random() - 0.5)
+    })
+
+    // Create teams array
+    const results = Array(numTeams).fill().map(() => [])
+
+    // Distribute players with specific positions first, using global position order
+    // Skip 'Undecided' for now, we'll handle it separately
+    const specificPositions = POSITION_CONFIG.ORDER.filter(pos => pos !== 'Undecided')
+
+    specificPositions.forEach(position => {
+      const playersInPosition = playersByPosition[position]
+      playersInPosition.forEach((player, index) => {
+        const teamIndex = index % numTeams
+        player.teamNumber = teamIndex + 1
+        results[teamIndex].push(player)
       })
+    })
 
-      results.push(teamPlayers)
-    }
+    // Distribute Undecided players evenly across teams
+    const undecidedPlayers = playersByPosition['Undecided']
+    undecidedPlayers.forEach((player, index) => {
+      const teamIndex = index % numTeams
+      player.teamNumber = teamIndex + 1
+      results[teamIndex].push(player)
+    })
 
-    // Distribute Extra players evenly across teams
-    const extraPlayers = temp['Extra']
-    if (extraPlayers.length > 0) {
-      // Shuffle extra players for random distribution
-      extraPlayers.sort(() => Math.random() - 0.5)
-
-      // Distribute extra players round-robin style
-      extraPlayers.forEach((extraPlayer, index) => {
-        const targetTeamIndex = index % results.length
-        extraPlayer.teamNumber = targetTeamIndex + 1
-        results[targetTeamIndex].push(extraPlayer)
-      })
-    }
-
-    teams.value = results
+    // Keep only teams with filled results
+    teams.value = results.filter(team => team.length > 0)
   }
 
   function openTeamModal() {
@@ -680,6 +678,8 @@
   .team-actions {
     display: flex;
     gap: var(--space-3);
+    justify-content: center;
+    /* align-items: center; */
   }
 
   .teams-grid {
@@ -714,7 +714,7 @@
     color: var(--position-opposite-text);
   }
 
-  .legend-item.position-extra {
+  .legend-item.position-undecided {
     background-color: var(--position-extra-bg);
     color: var(--position-extra-text);
   }

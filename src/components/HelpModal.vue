@@ -37,7 +37,7 @@
           </h3>
           <ol>
             <li>
-              <strong>Add Players:</strong> Enter names and pick positions (Setter, Libero, etc.)
+              <strong>Add Players:</strong> Enter names and optionally pick positions (or leave as "Undecided")
             </li>
             <li>
               <strong>Create Teams:</strong> Click "Shuffle Teams" for automatic balancing, or "Manual Team Creation" to pick players yourself
@@ -50,15 +50,24 @@
 
         <div class="help-section">
           <h3>
-            Volleyball Team Rules:
+            Flexible Team Creation:
           </h3>
           <ul>
-            <li>1 Setter (playmaker)</li>
-            <li>1 Libero (defensive specialist)</li>
-            <li>2 Middle Blockers (front-row blockers)</li>
-            <li>2 Outside Hitters (main attackers)</li>
-            <li>1 Opposite Hitter (secondary attacker)</li>
-            <li>Extra players (optional, distributed evenly)</li>
+            <li><strong>Any number of players</strong> can form teams (minimum 2 players)</li>
+            <li><strong>Positions are optional</strong> - players can be "Undecided" or have specific roles</li>
+            <li><strong>Smart distribution:</strong> Players with specific positions are prioritized and distributed evenly across teams</li>
+            <li><strong>Undecided players</strong> fill remaining spots in teams</li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h3>
+            Volleyball Positions (Optional):
+          </h3>
+          <ul>
+            <li v-for="position in POSITION_CONFIG.ORDER" :key="position">
+              <strong>{{ position }}:</strong> {{ getPositionDescription(position) }}
+            </li>
           </ul>
         </div>
 
@@ -67,8 +76,8 @@
             Pro Tips:
           </h3>
           <ul>
-            <li>You need at least 7 players to create teams</li>
-            <li>Extra players are automatically distributed evenly across teams</li>
+            <li>You only need 2 players to create teams</li>
+            <li>Players with specific positions will be distributed evenly across teams</li>
             <li>Click "Edit" on any team to modify its players</li>
             <li>Everything saves automatically - no need to worry about losing your teams!</li>
           </ul>
@@ -80,6 +89,7 @@
 
 <script setup>
   import Button from './Button.vue'
+  import { POSITION_CONFIG, getPositionDescription } from '../config/positions.js'
 
   defineProps({
     isOpen: {
