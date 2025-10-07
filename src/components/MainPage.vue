@@ -133,6 +133,7 @@
               v-for="(player, i) in sortedPlayers"
               :key="i"
               :player="player"
+              :show-team-number="true"
               @remove="removePlayer(i)"
             />
           </div>
@@ -299,9 +300,11 @@
       return
     }
 
-    // Calculate number of teams (any number of players can form teams)
     const numPlayers = players.value.length
-    const numTeams = Math.max(1, Math.floor(numPlayers / 2)) // At least 1 team, prefer 2+ players per team
+
+    // Calculate number of teams based on 7-player threshold
+    // e.g. 1 team for 1–7 players, 2 for 8–14, 3 for 15–21, etc.
+    const numTeams = Math.max(1, Math.ceil(numPlayers / 7))
 
     // Separate players by position using global config
     const playersByPosition = {}
@@ -325,10 +328,8 @@
     // Create teams array
     const results = Array(numTeams).fill().map(() => [])
 
-    // Distribute players with specific positions first, using global position order
-    // Skip 'Undecided' for now, we'll handle it separately
+    // Distribute players by position (except Undecided)
     const specificPositions = POSITION_CONFIG.ORDER.filter(pos => pos !== 'Undecided')
-
     specificPositions.forEach(position => {
       const playersInPosition = playersByPosition[position]
       playersInPosition.forEach((player, index) => {
@@ -338,7 +339,7 @@
       })
     })
 
-    // Distribute Undecided players evenly across teams
+    // Distribute Undecided players evenly after core roles
     const undecidedPlayers = playersByPosition['Undecided']
     undecidedPlayers.forEach((player, index) => {
       const teamIndex = index % numTeams
@@ -346,8 +347,10 @@
       results[teamIndex].push(player)
     })
 
-    // Keep only teams with filled results
-    teams.value = results.filter(team => team.length > 0)
+    // Remove teams that are completely empty (shouldn’t happen, but just in case)
+    const filledTeams = results.filter(team => team.length > 0)
+
+    teams.value = filledTeams
   }
 
   function openTeamModal() {
@@ -381,19 +384,33 @@
 
   function updateTeamFromModal(teamPlayers) {
     if (editingTeamIndex.value !== null) {
+      const teamNumber = editingTeamIndex.value + 1
+
       // Clear team numbers from current team players
       teams.value[editingTeamIndex.value].forEach(player => {
         player.teamNumber = null
       })
 
-      // Assign team numbers to new team players
-      const teamNumber = editingTeamIndex.value + 1
+      // Remove players from other teams if they're being transferred
       teamPlayers.forEach(player => {
+        // Find and remove player from any existing team
+        teams.value.forEach((team, teamIndex) => {
+          const playerIndex = team.findIndex(p => p.name === player.name && p.position === player.position)
+          if (playerIndex > -1) {
+            team.splice(playerIndex, 1)
+          }
+        })
+
+        // Assign team number to the player
         player.teamNumber = teamNumber
       })
 
       // Replace the team
       teams.value[editingTeamIndex.value] = teamPlayers
+
+      // Remove empty teams and renumber remaining teams
+      teams.value = teams.value.filter(team => team.length > 0)
+      renumberTeams()
     }
     closeEditTeamModal()
   }

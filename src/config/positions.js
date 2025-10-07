@@ -52,6 +52,15 @@ export function getPositionOrder(position) {
 
 export function sortPlayersByPosition(players) {
   return [...players].sort((a, b) => {
+    // First, sort by team assignment (unassigned players first)
+    const aHasTeam = a.teamNumber !== null && a.teamNumber !== undefined
+    const bHasTeam = b.teamNumber !== null && b.teamNumber !== undefined
+
+    if (aHasTeam !== bHasTeam) {
+      return aHasTeam ? 1 : -1 // unassigned players come first
+    }
+
+    // Then sort by position order
     const orderA = getPositionOrder(a.position)
     const orderB = getPositionOrder(b.position)
     return orderA - orderB

@@ -1,12 +1,18 @@
 <template>
   <div
     class="player-card"
-    :class="getPositionClass(player.position)"
+    :class="[
+      getPositionClass(player.position),
+      { 'player-assigned': player.teamNumber && showTeamNumber }
+    ]"
   >
     <div class="player-info">
       <div class="player-name">
         {{ player.name }}
-        <span v-if="player.teamNumber" class="team-number">
+        <span
+          v-if="player.teamNumber && showTeamNumber"
+          class="team-number"
+        >
           (Team {{ player.teamNumber }})
         </span>
       </div>
@@ -65,6 +71,10 @@
     isSelected: {
       type: Boolean,
       default: false
+    },
+    showTeamNumber: {
+      type: Boolean,
+      default: false
     }
   })
 
@@ -87,6 +97,10 @@
 
   .player-card:hover {
     border-color: var(--border-medium);
+  }
+
+  .player-card.player-assigned .player-info {
+    opacity: 0.4;
   }
 
   .player-info {

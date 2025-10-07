@@ -139,6 +139,7 @@
                 :show-remove="false"
                 :show-team-remove="false"
                 :show-selection="true"
+                :show-team-number="true"
                 :is-selected="selectedPlayers.includes(player.name)"
               />
             </div>
