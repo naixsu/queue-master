@@ -1,190 +1,65 @@
-# 🏐 Queue Master - Volleyball Team Management System
+# 🏐 Queue Master - Volleyball Team Manager
 
-Hey there! I built this volleyball team management app because I was tired of manually trying to balance teams and keep track of who's playing what position. It's a Vue 3 app that makes organizing volleyball teams super easy and follows the actual volleyball rules.
+A simple Vue 3 app for creating balanced volleyball teams. Add players, assign positions (optional), and let the app automatically distribute them into fair teams.
 
-## What This Does
+## What it does
 
-### Managing Players
-- Add players with their names and positions (all the standard volleyball positions plus "Extra" for those who don't have a specific role)
-- Each position has its own color so you can quickly see who's what
-- Shows which team each player is on right in the player list
-- Remove players individually or clear everyone at once
+- **Add players** with names and positions (or leave as "Undecided")
+- **Create teams** automatically with smart distribution
+- **Manual team creation** for full control
+- **Flexible system** - works with any number of players (minimum 2)
+- **Auto-saves** everything to your browser
 
-### Creating Teams
-I've got two ways to make teams:
+## Try it online
 
-**Automatic Shuffling**: Just click the shuffle button and it'll create balanced teams following volleyball rules. You need at least 7 players for this to work. Extra players are automatically distributed evenly across all teams.
+🌐 **Live Demo:** [https://naixsu.github.io/queue-master/](https://naixsu.github.io/queue-master/)
 
-**Manual Team Creation**: This is my favorite feature. Click "Manual Team Creation" and a modal pops up where you can pick exactly which players you want on a team. It shows you the requirements in real-time and won't let you create a team unless it follows the rules. You can also add Extra players as needed.
+## Run locally
 
-The volleyball rules it follows:
-- 1 Setter
-- 1 Libero  
-- 2 Middle Blockers
-- 2 Outside Hitters
-- 1 Opposite Hitter
-- Extra players (optional, distributed evenly)
-
-### The UI
-I tried to keep it clean and simple. No fancy gradients or anything that might distract from actually using it. Everything scales nicely when you zoom in/out, and it works on mobile too. I broke it down into reusable components so it's easy to maintain.
-
-**Built-in Help**: Click the "Help" button next to the title to get a quick overview of what the app does and how to use it. Perfect for new users who want to get started quickly.
-
-### Data Persistence
-Everything saves automatically to your browser's local storage, so you won't lose your teams when you refresh the page. When you reload, it reconstructs all the teams from the player data.
-
-## Getting Started
-
-### What You Need
-- Node.js (version 16 ((maybe 20 i think?)) or higher)
+### Prerequisites
+- Node.js 20+ 
 - npm or yarn
 
-### Installation
+### Setup
+```bash
+# Clone the repository
+git clone https://github.com/naixsu/queue-master.git
+cd queue-master
 
-1. **Get the code**
-   ```bash
-   git clone <repository-url>
-   cd queue-master
-   ```
+# Install dependencies
+npm install
 
-2. **Install the dependencies**
-   ```bash
-   npm install
-   ```
+# Start development server
+npm run dev
+```
 
-3. **Start it up**
-   ```bash
-   npm run dev
-   ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-4. **Open your browser**
-   Go to `http://localhost:5173`
-
-### Building for Production
+### Build for production
 ```bash
 npm run build
 ```
 
-## How to Use It
+## How to use
 
-**💡 Need help?** Click the "Help" button next to the title for a quick guide!
+1. **Add players** - Enter names and optionally pick positions
+2. **Create teams** - Click "Shuffle Teams" for automatic balancing
+3. **Manual control** - Use "Manual Team Creation" to pick specific players
+4. **Manage teams** - Edit, remove players, or delete entire teams
 
-### Adding Players
-Pretty straightforward - just type in a name, pick a position from the dropdown, and hit "Add Player". The player will show up in the list with a colored badge for their position.
+## Features
 
-### Making Teams
+- ✅ **Flexible team creation** - Any number of players can form teams
+- ✅ **Position prioritization** - Players with specific positions distributed evenly
+- ✅ **Smart sorting** - Players organized by position for easy viewing
+- ✅ **Responsive design** - Works on desktop and mobile
+- ✅ **Auto-save** - No data loss on page refresh
 
-**For Automatic Teams:**
-1. Make sure you have at least 7 players
-2. Click "Shuffle Teams"
-3. Done! Teams are created and players show their team numbers
+## Tech Stack
 
-**For Manual Teams:**
-1. Click "Manual Team Creation"
-2. A modal opens with all your available players
-3. Click players to select them (you'll see them highlighted with a blue border)
-4. The requirements section shows what you still need (including optional Extra players)
-5. When everything's green, click "Create Team"
-6. Your team appears in the teams section
-
-### Managing Teams
-- **Edit Teams**: Click the "Edit" button on any team to modify its players
-- **Remove Players**: Click "Remove" on individual player cards to remove them from teams
-- **Remove Teams**: Click "Remove" in the team header to delete entire teams
-- **Auto-renumbering**: When you remove teams, all remaining teams get renumbered automatically
-- **Extra Players**: Add as many Extra players as you want during team creation or editing
-
-## How I Built It
-
-### Components
-I split everything into separate components:
-- **MainPage.vue**: The main container that holds everything
-- **PlayerCard.vue**: Shows individual players (can be in different modes)
-- **TeamCard.vue**: Displays teams with management controls
-- **Button.vue**: Reusable button component
-- **TeamSelectionModal.vue**: The modal for manual team creation
-- **HelpModal.vue**: Built-in help system for new users
-
-### Styling
-I put all the CSS variables in `main.css` so I can easily change colors and spacing across the whole app. Each component has its own scoped styles that use those variables.
-
-### State Management
-I used Vue 3's Composition API with `ref()` for reactive data. Everything automatically saves to localStorage using `watch()`, and when you reload the page, it rebuilds the teams from the player data.
-
-## The Technical Stuff
-
-### Volleyball Rules
-I implemented the standard volleyball team composition:
-- **1 Setter**: The one who sets up the plays
-- **1 Libero**: Defensive specialist (can't attack)
-- **2 Middle Blockers**: Front-row blockers
-- **2 Outside Hitters**: Main attackers
-- **1 Opposite Hitter**: Secondary attacker
-- **Extra Players**: Flexible players that can fill any role (distributed evenly across teams)
-
-### Data Structure
-Here's how the data looks:
-
-```javascript
-// Each player
-{
-  name: "John Doe",
-  position: "Setter", // or Libero, Middle Blocker, etc.
-  teamNumber: 1 // null if not on a team
-}
-
-// Teams array
-[
-  [player1, player2, player3, ...], // Team 1
-  [player4, player5, player6, ...], // Team 2
-  // etc.
-]
-```
-
-### Browser Support
-Works on all modern browsers (Chrome, Firefox, Safari, Edge). Uses CSS Grid, Flexbox, and CSS Variables, so older browsers might not work perfectly.
-
-## Project Structure
-```
-src/
-├── components/
-│   ├── MainPage.vue
-│   ├── PlayerCard.vue
-│   ├── TeamCard.vue
-│   ├── Button.vue
-│   ├── TeamSelectionModal.vue
-│   └── HelpModal.vue
-├── main.css
-├── main.js
-└── App.vue
-```
-
-## Recent Updates
-
-### New Features Added:
-- **Extra Player Support**: Extra players are now included in automatic shuffling and distributed evenly across teams
-- **Team Editing**: Click the "Edit" button on any team to modify its players after creation
-- **Enhanced Manual Team Creation**: Add as many Extra players as you want during team creation
-- **Built-in Help System**: Click the "Help" button for a quick guide on how to use the app
-- **Improved UI**: Better visual feedback for selected players with highlighting and consistent button styling
-- **Flexible Team Management**: Full control over team composition with easy add/remove functionality
-
-### UI Improvements:
-- **Help Button**: Easy-to-find "Help" button next to the title for new users
-- **Consistent Button Design**: All buttons now use the Button component with clear text labels
-- **Enhanced Accessibility**: Replaced icon-based buttons with descriptive text for better screen reader support
-- **Better Visual Feedback**: Improved player selection highlighting in team creation modal
-- **Component Architecture**: Modular design with separate HelpModal component for better maintainability
-- **Mobile Responsive**: Optimized design that works great on all device sizes
-
-## Contributing
-
-If you find any bugs or want to add features, feel free to submit a pull request! I'm always looking to improve this.
-
-## License
-
-This is open source under the MIT License.
+- Vue 3 (Composition API)
+- CSS Grid & Flexbox
+- Local Storage for persistence
+- No external dependencies
 
 ---
-
-Thanks for checking out my volleyball team management app! I hope it makes organizing your teams as easy as it does for me. 🏐
