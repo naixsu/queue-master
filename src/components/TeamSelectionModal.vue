@@ -23,95 +23,100 @@
       <div class="modal-body">
         <div class="team-requirements">
           <h3>
-            Team Requirements
+            Team Composition
           </h3>
 
           <div class="requirements-grid">
-            <div
-              class="requirement"
-              :class="{ 'met': selectedCounts['Setter'] >= 1 }"
-            >
+            <div class="requirement">
               <span class="requirement-icon">
-                {{ selectedCounts['Setter'] >= 1 ? '✓' : '○' }}
+                ✓
               </span>
               <span>
-                1 Setter
+                At least 1 player
               </span>
               <span class="count">
-                ({{ selectedCounts['Setter'] }}/1)
-              </span>
-            </div>
-
-            <div
-              class="requirement"
-              :class="{ 'met': selectedCounts['Libero'] >= 1 }"
-            >
-              <span class="requirement-icon">
-                {{ selectedCounts['Libero'] >= 1 ? '✓' : '○' }}
-              </span>
-              <span>
-                1 Libero
-              </span>
-              <span class="count">
-                ({{ selectedCounts['Libero'] }}/1)
-              </span>
-            </div>
-
-            <div
-              class="requirement"
-              :class="{ 'met': selectedCounts['Middle Blocker'] >= 2 }"
-            >
-              <span class="requirement-icon">
-                {{ selectedCounts['Middle Blocker'] >= 2 ? '✓' : '○' }}
-              </span>
-              <span>
-                2 Middle Blockers
-              </span>
-              <span class="count">
-                ({{ selectedCounts['Middle Blocker'] }}/2)
-              </span>
-            </div>
-
-            <div
-              class="requirement"
-              :class="{ 'met': selectedCounts['Outside Hitter'] >= 2 }"
-            >
-              <span class="requirement-icon">
-                {{ selectedCounts['Outside Hitter'] >= 2 ? '✓' : '○' }}
-              </span>
-              <span>
-                2 Outside Hitters
-              </span>
-              <span class="count">
-                ({{ selectedCounts['Outside Hitter'] }}/2)
-              </span>
-            </div>
-
-            <div
-              class="requirement"
-              :class="{ 'met': selectedCounts['Opposite Hitter'] >= 1 }"
-            >
-              <span class="requirement-icon">
-                {{ selectedCounts['Opposite Hitter'] >= 1 ? '✓' : '○' }}
-              </span>
-              <span>
-                1 Opposite Hitter
-              </span>
-              <span class="count">
-                ({{ selectedCounts['Opposite Hitter'] }}/1)
+                ({{ selectedPlayers.length }} selected)
               </span>
             </div>
 
             <div class="requirement extra-requirement">
-              <span class="requirement-icon">
-                +
-              </span>
               <span>
-                Extra Players (Optional)
+                Positions are optional - players with specific positions will be prioritized in team distribution
               </span>
-              <span class="count">
-                ({{ selectedCounts['Extra'] }})
-              </span>
+            </div>
+          </div>
+
+          <div class="position-breakdown">
+            <h4>
+              Selected Players by Position:
+            </h4>
+            <div class="position-stats">
+              <div
+                v-if="selectedCounts['Setter'] > 0"
+                class="position-stat"
+              >
+                <span class="position-name">
+                  Setters:
+                </span>
+                <span class="position-count">
+                  {{ selectedCounts['Setter'] }}
+                </span>
+              </div>
+              <div
+                v-if="selectedCounts['Libero'] > 0"
+                class="position-stat"
+              >
+                <span class="position-name">
+                  Liberos:
+                </span>
+                <span class="position-count">
+                  {{ selectedCounts['Libero'] }}
+                </span>
+              </div>
+              <div
+                v-if="selectedCounts['Middle Blocker'] > 0"
+                class="position-stat"
+              >
+                <span class="position-name">
+                  Middle Blockers:
+                </span>
+                <span class="position-count">
+                  {{ selectedCounts['Middle Blocker'] }}
+                </span>
+              </div>
+              <div
+                v-if="selectedCounts['Outside Hitter'] > 0"
+                class="position-stat"
+              >
+                <span class="position-name">
+                  Outside Hitters:
+                </span>
+                <span class="position-count">
+                  {{ selectedCounts['Outside Hitter'] }}
+                </span>
+              </div>
+              <div
+                v-if="selectedCounts['Opposite Hitter'] > 0"
+                class="position-stat"
+              >
+                <span class="position-name">
+                  Opposite Hitters:
+                </span>
+                <span class="position-count">
+                  {{ selectedCounts['Opposite Hitter'] }}
+                </span>
+              </div>
+              <div
+                v-if="selectedCounts['Undecided'] > 0"
+                class="position-stat"
+              >
+                <span class="position-name">
+                  Undecided:
+                </span>
+                <span class="position-count">
+                  {{ selectedCounts['Undecided'] }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -167,6 +172,7 @@
   import { ref, computed, watch } from 'vue'
   import Button from './Button.vue'
   import PlayerCard from './PlayerCard.vue'
+  import { POSITION_CONFIG, sortPlayersByPosition } from '../config/positions.js'
 
   const props = defineProps({
     isOpen: {
@@ -188,11 +194,14 @@
   const selectedPlayers = ref([])
 
   const availablePlayers = computed(() => {
+    let players = []
     if (props.editingTeam) {
       // When editing, include all players (both unassigned and current team players)
-      return props.players
+      players = props.players
+    } else {
+      players = props.players.filter(player => !player.teamNumber)
     }
-    return props.players.filter(player => !player.teamNumber)
+    return sortPlayersByPosition(players)
   })
 
   // Watch for editing team changes to pre-select players
@@ -212,14 +221,10 @@
   })
 
   const selectedCounts = computed(() => {
-    const counts = {
-      'Setter': 0,
-      'Libero': 0,
-      'Middle Blocker': 0,
-      'Outside Hitter': 0,
-      'Opposite Hitter': 0,
-      'Extra': 0
-    }
+    const counts = {}
+    POSITION_CONFIG.ORDER.forEach(position => {
+      counts[position] = 0
+    })
 
     selectedPlayers.value.forEach(playerName => {
       const player = availablePlayers.value.find(p => p.name === playerName)
@@ -232,13 +237,7 @@
   })
 
   const canCreateTeam = computed(() => {
-    return (
-      selectedCounts.value['Setter'] >= 1 &&
-      selectedCounts.value['Libero'] >= 1 &&
-      selectedCounts.value['Middle Blocker'] >= 2 &&
-      selectedCounts.value['Outside Hitter'] >= 2 &&
-      selectedCounts.value['Opposite Hitter'] >= 1
-    )
+    return selectedPlayers.value.length >= 1 // Any number of players can form a team
   })
 
   function togglePlayer(player) {
@@ -330,12 +329,12 @@
 
   .modal-body {
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden;
     padding: var(--space-6);
   }
 
   .team-requirements {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-1);
   }
 
   .team-requirements h3 {
@@ -347,8 +346,49 @@
 
   .requirements-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .position-breakdown {
+    background-color: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .position-breakdown h4 {
+    margin: 0 0 var(--space-3) 0;
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-secondary);
+  }
+
+  .position-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .position-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background-color: var(--bg-card);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+  }
+
+  .position-name {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .position-count {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-primary);
   }
 
   .requirement {
@@ -392,8 +432,9 @@
 
   .players-grid {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-2);
-    max-height: 400px;
+    max-height: 230px;
     overflow-y: auto;
   }
 
@@ -414,11 +455,12 @@
     background-color: var(--color-primary-bg);
     border: 1px solid var(--color-primary);
     transform: translateY(-1px);
+    margin: 2px;
   }
 
-  .player-selector-wrapper.selected:first-child {
+  /* .player-selector-wrapper.selected:first-child {
     margin-top: 5px;
-  }
+  } */
 
   .player-selector-wrapper.selected:hover {
     box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-lg);
@@ -446,6 +488,10 @@
     }
     
     .requirements-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .players-grid {
       grid-template-columns: 1fr;
     }
   }

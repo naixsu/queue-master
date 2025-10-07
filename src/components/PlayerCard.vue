@@ -43,6 +43,7 @@
 
 <script setup>
   import Button from './Button.vue'
+  import { getPositionClass } from '../config/positions.js'
 
   defineProps({
     player: {
@@ -69,17 +70,6 @@
 
   defineEmits(['remove', 'remove-from-team'])
 
-  function getPositionClass(position) {
-    const classMap = {
-      'Setter': 'position-setter',
-      'Libero': 'position-libero',
-      'Middle Blocker': 'position-middle',
-      'Outside Hitter': 'position-outside',
-      'Opposite Hitter': 'position-opposite',
-      'Extra': 'position-extra'
-    }
-    return classMap[position] || 'position-extra'
-  }
 </script>
 
 <style scoped>
@@ -180,7 +170,7 @@
     color: var(--position-opposite-text);
   }
 
-  .position-extra {
+  .position-undecided {
     background-color: var(--position-extra-bg);
     color: var(--position-extra-text);
   }

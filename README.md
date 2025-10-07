@@ -102,7 +102,6 @@ I split everything into separate components:
 - **PlayerCard.vue**: Shows individual players (can be in different modes)
 - **TeamCard.vue**: Displays teams with management controls
 - **Button.vue**: Reusable button component
-- **ShuffleButton.vue**: Special button for shuffling
 - **TeamSelectionModal.vue**: The modal for manual team creation
 - **HelpModal.vue**: Built-in help system for new users
 
@@ -153,7 +152,6 @@ src/
 │   ├── PlayerCard.vue
 │   ├── TeamCard.vue
 │   ├── Button.vue
-│   ├── ShuffleButton.vue
 │   ├── TeamSelectionModal.vue
 │   └── HelpModal.vue
 ├── main.css
