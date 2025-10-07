@@ -113,3 +113,47 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
 }
+
+/* Hide scrollbars for modals and specific components */
+.modal-body,
+.help-content,
+.players-grid:not(.app .players-grid) {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.modal-body::-webkit-scrollbar,
+.help-content::-webkit-scrollbar,
+.players-grid:not(.app .players-grid)::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+/* Show scrollbars for main page content */
+.app .players-grid,
+.app .teams-grid {
+  scrollbar-width: thin; /* Firefox - thin scrollbar */
+  -ms-overflow-style: auto; /* Internet Explorer 10+ */
+}
+
+.app .players-grid::-webkit-scrollbar,
+.app .teams-grid::-webkit-scrollbar {
+  display: block; /* WebKit */
+  width: 4px; /* Very thin scrollbar */
+}
+
+.app .players-grid::-webkit-scrollbar-track,
+.app .teams-grid::-webkit-scrollbar-track {
+  background: transparent; /* Invisible track */
+}
+
+.app .players-grid::-webkit-scrollbar-thumb,
+.app .teams-grid::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 2px; /* Rounded corners */
+  border: none;
+}
+
+.app .players-grid::-webkit-scrollbar-thumb:hover,
+.app .teams-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
+}
