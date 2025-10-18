@@ -135,6 +135,7 @@
               :player="player"
               :show-team-number="true"
               @remove="removePlayer(i)"
+              @edit="editPlayer(i)"
             />
           </div>
         </div>
@@ -146,7 +147,7 @@
             @click="openTeamModal"
             :disabled="players.length < 2"
           >
-            Manual Team Creation
+            Create Team
           </Button>
 
           <Button
@@ -217,6 +218,15 @@
       @create-team="updateTeamFromModal"
     />
 
+    <!-- Edit Player Modal -->
+    <EditPlayerModal
+      :is-open="showEditPlayerModal"
+      :player="editingPlayer"
+      :teams="teams"
+      @close="closeEditPlayerModal"
+      @save="updatePlayerFromModal"
+    />
+
     <!-- Help Modal -->
     <HelpModal
       :is-open="showHelpModal"
@@ -232,6 +242,7 @@
   import TeamCard from './TeamCard.vue'
   import TeamSelectionModal from './TeamSelectionModal.vue'
   import HelpModal from './HelpModal.vue'
+  import EditPlayerModal from './EditPlayerModal.vue'
   import { POSITION_CONFIG, getPositionClass, sortPlayersByPosition } from '../config/positions.js'
 
   const positions = POSITION_CONFIG.ORDER
@@ -243,6 +254,8 @@
   const showEditTeamModal = ref(false)
   const editingTeamIndex = ref(null)
   const showHelpModal = ref(false)
+  const showEditPlayerModal = ref(false)
+  const editingPlayer = ref(null)
 
   // Computed property for players sorted by position
   const sortedPlayers = computed(() => {
@@ -269,6 +282,15 @@
     players.value.push({ name: newPlayer.value.name, position })
 
     newPlayer.value = { name: '', position: '' }
+  }
+
+  function editPlayer(sortedIndex) {
+    // Find the original index in the players array
+    const sortedPlayer = sortedPlayers.value[sortedIndex]
+    // const originalIndex = players.value.findIndex(p => p.name === sortedPlayer.name && p.position === sortedPlayer.position)
+    // editingPlayerIndex.value = originalIndex
+    editingPlayer.value = sortedPlayer
+    this.openEditPlayerModal();
   }
 
   function removePlayer(sortedIndex) {
@@ -359,6 +381,29 @@
 
   function closeTeamModal() {
     showTeamModal.value = false
+  }
+
+  function openEditPlayerModal() {
+    showEditPlayerModal.value = true
+  }
+
+  function closeEditPlayerModal() {
+    showEditPlayerModal.value = false
+    editingPlayer.value = null
+  }
+
+  function updatePlayerFromModal(updatedPlayer) {
+    const index = players.value.findIndex(
+      p => p.name === editingPlayer.value.name && p.position === editingPlayer.value.position
+    )
+
+    if (index !== -1) {
+      // Update in players list
+      players.value[index].name = updatedPlayer.name
+      players.value[index].position = updatedPlayer.position
+    }
+
+    closeEditPlayerModal()
   }
 
   function createTeamFromModal(teamPlayers) {

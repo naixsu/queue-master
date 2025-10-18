@@ -137,6 +137,7 @@
               <PlayerCard
                 :player="player"
                 :show-remove="false"
+                :show-edit="false"
                 :show-team-remove="false"
                 :show-selection="true"
                 :show-team-number="true"
@@ -458,10 +459,6 @@
     transform: translateY(-1px);
     margin: 2px;
   }
-
-  /* .player-selector-wrapper.selected:first-child {
-    margin-top: 5px;
-  } */
 
   .player-selector-wrapper.selected:hover {
     box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-lg);

@@ -20,6 +20,40 @@
         {{ player.position }}
       </div>
     </div>
+    <div class="player-actions">
+      <Button
+        v-if="showEdit"
+        variant="secondary"
+        size="sm"
+        @click="$emit('edit')"
+      >
+        Edit
+      </Button>
+      <Button
+        v-if="showRemove"
+        variant="danger"
+        size="sm"
+        @click="$emit('remove')"
+      >
+        Remove
+      </Button>
+      <Button
+        v-if="showTeamRemove"
+        variant="danger"
+        size="sm"
+        @click="$emit('remove-from-team')"
+      >
+        Remove
+      </Button>
+    </div>
+    <!-- <Button
+      v-if="showEdit"
+      variant="secondary"
+      size="sm"
+      @click="$emit('edit')"
+    >
+      Edit
+    </Button>
     <Button
       v-if="showRemove"
       variant="danger"
@@ -36,7 +70,7 @@
       @click="$emit('remove-from-team')"
     >
       Remove
-    </Button>
+    </Button> -->
 
     <div
       v-if="showSelection"
@@ -60,6 +94,10 @@
       type: Boolean,
       default: true
     },
+    showEdit: {
+      type: Boolean,
+      default: true
+    },
     showTeamRemove: {
       type: Boolean,
       default: false
@@ -78,7 +116,7 @@
     }
   })
 
-  defineEmits(['remove', 'remove-from-team'])
+  defineEmits(['remove', 'remove-from-team', 'edit'])
 
 </script>
 
@@ -156,6 +194,12 @@
     font-weight: var(--font-bold);
     color: var(--text-muted);
     transition: color var(--transition-fast);
+  }
+
+  .player-actions {
+    display: flex;
+    gap: var(--space-2); /* Add spacing between buttons */
+    align-items: center;
   }
 
   /* Position-specific colors */

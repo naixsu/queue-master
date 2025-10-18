@@ -31,6 +31,7 @@
         :key="player.name"
         :player="player"
         :show-remove="false"
+        :show-edit="false"
         :show-team-remove="true"
         @remove-from-team="$emit('remove-player', player)"
       />
