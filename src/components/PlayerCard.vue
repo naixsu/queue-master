@@ -46,31 +46,6 @@
         Remove
       </Button>
     </div>
-    <!-- <Button
-      v-if="showEdit"
-      variant="secondary"
-      size="sm"
-      @click="$emit('edit')"
-    >
-      Edit
-    </Button>
-    <Button
-      v-if="showRemove"
-      variant="danger"
-      size="sm"
-      @click="$emit('remove')"
-    >
-      Remove
-    </Button>
-    
-    <Button
-      v-if="showTeamRemove"
-      variant="danger"
-      size="sm"
-      @click="$emit('remove-from-team')"
-    >
-      Remove
-    </Button> -->
 
     <div
       v-if="showSelection"

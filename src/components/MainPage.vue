@@ -287,10 +287,8 @@
   function editPlayer(sortedIndex) {
     // Find the original index in the players array
     const sortedPlayer = sortedPlayers.value[sortedIndex]
-    // const originalIndex = players.value.findIndex(p => p.name === sortedPlayer.name && p.position === sortedPlayer.position)
-    // editingPlayerIndex.value = originalIndex
     editingPlayer.value = sortedPlayer
-    this.openEditPlayerModal();
+    showEditPlayerModal.value = true
   }
 
   function removePlayer(sortedIndex) {
@@ -381,10 +379,6 @@
 
   function closeTeamModal() {
     showTeamModal.value = false
-  }
-
-  function openEditPlayerModal() {
-    showEditPlayerModal.value = true
   }
 
   function closeEditPlayerModal() {
