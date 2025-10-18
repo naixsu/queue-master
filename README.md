@@ -40,6 +40,11 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 npm run build
 ```
 
+### Deploy
+```bash
+npm run deploy
+```
+
 ## How to use
 
 1. **Add players** - Enter names and optionally pick positions
